@@ -100,19 +100,21 @@
             THREE.Loader.Handlers.add(/\.dds$/i, new THREE.DDSLoader());
 
             new THREE.MTLLoader()
-                .setPath('assets/waluigi_obj/')
-                .load('waluigi.mtl', function(materials) {
+                .setPath('assets/delorean/')
+                .load('delorean.mtl', function(materials) {
 
                     materials.preload();
 
                     new THREE.OBJLoader()
                         .setMaterials(materials)
-                        .setPath('assets/waluigi_obj/')
-                        .load('waluigi.obj', function(object) {
+                        .setPath('assets/delorean/')
+                        .load('delorean.obj', function(object) {
 
-                            object.position.y = -105;
+                            object.position.y = -80;
 
-                            object.scale.multiplyScalar(8.2);
+                            object.scale.multiplyScalar(0.8);
+
+                            object.rotation.y = Math.PI / 2;
 
                             scene.add(object);
 
