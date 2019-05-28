@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Computação Gráfica - 2019</title>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <script src="js/lib/three.js"></script>
+    <script src="js/lib/GLTFLoader.js"></script>
+    <script src="js/lib/OrbitControls.js"></script>
+    <script type="module">
+
+        import { scene as dolphin } from "./js/scenes/dolphin.js";
+        import { scene as delorean } from "./js/scenes/delorean.js";
+        import { scene as palmTree } from "./js/scenes/palm_tree.js";
+
+        const palette = [
+            new THREE.Color(0xff71ce),
+            new THREE.Color(0x01cdfe),
+            new THREE.Color(0x05ffa1),
+            new THREE.Color(0xb967ff),
+            new THREE.Color(0xfffb96)
+        ];
+
+        let currentColorIndex = 0;
+        let currentColorValue = palette[currentColorIndex];
+
+        // Camera setup
+        let camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.x = -3;
+        camera.position.y = 1;
+        camera.position.z = -4;
+        camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+        // Controls setup
+        let controls = new THREE.OrbitControls(camera);
+
+        // Renderer setup
+        let renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(palette[0]);
+        document.body.appendChild(renderer.domElement);
+
+        // Light setup
+        let directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1, 100);
+        directionalLight.position.set(0, 1, -1);
+        directionalLight.castShadow = true;
+
+        // Scene setup
+        let scene = new THREE.Scene();
+        scene.position.set(0, 0.5, 0);
+        scene.add(directionalLight);
+
+        dolphin.position.set(0.5, 0.1, 0.32);
+        dolphin.scale.set(0.01, 0.01, 0.01);
+        dolphin.rotation.y = Math.PI / 2;
+        scene.add(dolphin);
+
+        delorean.position.set(0, -0.95, 0);
+        scene.add(delorean);
+
+        palmTree.position.set(0, 0, -1.2);
+        palmTree.scale.set(0.01, 0.01, 0.01);
+        scene.add(palmTree);
+
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+
+            const nextColorIndex = (currentColorIndex + 1) % palette.length;
+
+            const nextColorValue = palette[nextColorIndex];
+
+            const colorStep = 0.01;
+
+            if (currentColorValue.r < nextColorValue.r) {
+                currentColorValue.r += colorStep;
+            } else if (currentColorValue.r > nextColorValue.r) {
+                currentColorValue.r -= colorStep;
+            }
+
+            if (currentColorValue.g < nextColorValue.g) {
+                currentColorValue.g += colorStep;
+            } else if (currentColorValue.g > nextColorValue.g) {
+                currentColorValue.g -= colorStep;
+            }
+
+            if (currentColorValue.b < nextColorValue.b) {
+                currentColorValue.b += colorStep;
+            } else if (currentColorValue.b > nextColorValue.b) {
+                currentColorValue.b -= colorStep;
+            }
+
+            if ((currentColorValue.r - nextColorValue.r) <= colorStep &&
+                (currentColorValue.g - nextColorValue.g) <= colorStep &&
+                (currentColorValue.b - nextColorValue.b) <= colorStep) {
+                currentColorIndex++;
+            }
+
+            directionalLight.color.set(currentColorValue);
+            renderer.render(scene, camera);
+        }
+
+        animate();
+
+    </script>
+</body>
+
+</html>
