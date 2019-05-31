@@ -64,20 +64,24 @@
 
         // Scene setup
         let scene = new THREE.Scene();
-        scene.position.set(0, 0.5, 0);
+        var scene_matrix = new THREE.Matrix4().makeTranslation(0, 0.5, 0);
+        scene.applyMatrix(scene_matrix);
         scene.add(directionalLight);
         scene.add(directionalLightHelper);
 
-        dolphin.position.set(0.5, 0.1, 0.32);
-        dolphin.scale.set(0.01, 0.01, 0.01);
-        dolphin.rotation.y = Math.PI / 2;
+        var dolphin_matrix = new THREE.Matrix4().makeTranslation(0.5, 0.1, 0.32);
+        dolphin_matrix.multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01));
+        dolphin_matrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI/2));
+        dolphin.applyMatrix(dolphin_matrix);
         scene.add(dolphin);
-
-        delorean.position.set(0, -0.95, 0);
+        
+        var delorean_matrix = new THREE.Matrix4().makeTranslation(0, -6.95, 0);       
+        delorean.applyMatrix(delorean_matrix);
         scene.add(delorean);
 
-        palmTree.position.set(0, 0, -1.2);
-        palmTree.scale.set(0.01, 0.01, 0.01);
+        var palmTree_matrix = new THREE.Matrix4().makeTranslation(0, 0, -1.2);
+        palmTree_matrix.multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01));
+        palmTree.applyMatrix(palmTree_matrix);
         scene.add(palmTree);
 
         // Animation loop
