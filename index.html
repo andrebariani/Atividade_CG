@@ -26,6 +26,7 @@
         import { scene as dolphin } from "./js/scenes/dolphin.js";
         import { scene as delorean } from "./js/scenes/delorean.js";
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
+        import lamp from "./js/scenes/lamp.js";
 
         // Viewport definition
         var w = window.innerWidth;
@@ -44,50 +45,6 @@
             far: 100
         }
 
-        // Colors setup
-        const palette = [
-            new THREE.Color(0xff71ce),
-            new THREE.Color(0x01cdfe),
-            new THREE.Color(0x05ffa1),
-            new THREE.Color(0xb967ff),
-            new THREE.Color(0xfffb96)
-        ];
-
-        let currentColorIndex = 0;
-        let currentColorValue = palette[currentColorIndex];
-
-        function nextColor() {
-            const nextColorIndex = (currentColorIndex + 1) % palette.length;
-
-            const nextColorValue = palette[nextColorIndex];
-
-            const colorStep = 0.01;
-
-            if (currentColorValue.r < nextColorValue.r) {
-                currentColorValue.r += colorStep;
-            } else if (currentColorValue.r > nextColorValue.r) {
-                currentColorValue.r -= colorStep;
-            }
-
-            if (currentColorValue.g < nextColorValue.g) {
-                currentColorValue.g += colorStep;
-            } else if (currentColorValue.g > nextColorValue.g) {
-                currentColorValue.g -= colorStep;
-            }
-
-            if (currentColorValue.b < nextColorValue.b) {
-                currentColorValue.b += colorStep;
-            } else if (currentColorValue.b > nextColorValue.b) {
-                currentColorValue.b -= colorStep;
-            }
-
-            if ((currentColorValue.r - nextColorValue.r) <= colorStep &&
-                (currentColorValue.g - nextColorValue.g) <= colorStep &&
-                (currentColorValue.b - nextColorValue.b) <= colorStep) {
-                currentColorIndex++;
-            }
-        }
-
         // Camera setup
         let cameras = [
             new THREE.PerspectiveCamera(60, w / h, 1, 1000),
@@ -104,18 +61,18 @@
         ];
 
         cameras[0].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[0].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 1, -4));
+        cameras[0].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 0.5, -4));
 
         cameras[1].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(3, 1, 4));
+        cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(3, 0.5, 4));
 
         cameras[2].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 1, 4));
+        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 0.5, 4));
 
         cameras[3].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[3].applyMatrix(new THREE.Matrix4().makeTranslation(3, 1, -4));
+        cameras[3].applyMatrix(new THREE.Matrix4().makeTranslation(3, 0.5, -4));
 
-        cameras[4].position.set(-1, 0.5, 0);
+        cameras[4].applyMatrix(new THREE.Matrix4().makeTranslation(-1, 0.5, 0));
         cameras[4].zoom = 100;
         cameras[4].updateProjectionMatrix();
 
@@ -132,23 +89,16 @@
         // Renderer setup
         let renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setSize(w, h);
-        renderer.setClearColor(palette[0]);
+        renderer.setClearColor(0xff71ce);
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
-        // Light setup
-        let directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1, 100);
-        directionalLight.position.set(1, 1, -1);
-        directionalLight.castShadow = true;
-
-        let directionalLightHelper = new THREE.DirectionalLightHelper(directionalLight);
-
         // Scene setup
         let scene = new THREE.Scene();
-        var scene_matrix = new THREE.Matrix4().makeTranslation(0, 0.5, 0);
-        scene.applyMatrix(scene_matrix);
-        scene.add(directionalLight);
-        scene.add(directionalLightHelper);
+
+        lamp.scene.position.set(1, 1, -1);
+
+        scene.add(lamp.scene);
 
         dolphin.applyMatrix(
             new THREE.Matrix4().makeTranslation(0.5, 0.1, 0.32)
@@ -172,6 +122,8 @@
         scene.add(palmTree);
 
         // Controls
+        // let 
+
         document.addEventListener('keydown', onKeyDown, false);
 
         function onKeyDown(event) {
@@ -193,13 +145,11 @@
                     break;
             }
         }
-
         // Animation loop
         function animate() {
             requestAnimationFrame(animate);
-            nextColor();
-            directionalLight.color.set(currentColorValue);
             renderer.render(scene, camera);
+            lamp.nextColor();
         }
 
         animate();

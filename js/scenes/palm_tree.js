@@ -2,7 +2,7 @@ let scene = new THREE.Scene();
 
 let loader = new THREE.GLTFLoader();
 
-let delorean = loader.load(
+loader.load(
     'models/low_poly_palm_tree/scene.gltf',
     function (gltf) {
         scene.add(gltf.scene);
