@@ -27,6 +27,23 @@
         import { scene as delorean } from "./js/scenes/delorean.js";
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
 
+        // Viewport definition
+        var w = window.innerWidth;
+        var h = window.innerHeight;
+        var viewSize = h;
+        var aspectRatio = w / h;
+
+        let _viewport = {
+            viewSize: viewSize,
+            aspectRatio: aspectRatio,
+            left: (-aspectRatio * viewSize) / 2,
+            right: (aspectRatio * viewSize) / 2,
+            top: viewSize / 2,
+            bottom: -viewSize / 2,
+            near: -100,
+            far: 100
+        }
+
         // Colors setup
         const palette = [
             new THREE.Color(0xff71ce),
@@ -73,8 +90,17 @@
 
         // Camera setup
         let cameras = [
-            new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000),
-            new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000)
+            new THREE.PerspectiveCamera(60, w / h, 1, 1000),
+            new THREE.PerspectiveCamera(60, w / h, 1, 1000),
+            new THREE.PerspectiveCamera(60, w / h, 1, 1000),
+            new THREE.PerspectiveCamera(60, w / h, 1, 1000),
+            new THREE.OrthographicCamera(
+                _viewport.left,
+                _viewport.right,
+                _viewport.top,
+                _viewport.bottom,
+                _viewport.near,
+                _viewport.far)
         ];
 
         cameras[0].lookAt(new THREE.Vector3(0, 0, 0));
@@ -83,19 +109,31 @@
         cameras[1].lookAt(new THREE.Vector3(0, 0, 0));
         cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(3, 1, 4));
 
+        cameras[2].lookAt(new THREE.Vector3(0, 0, 0));
+        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 1, 4));
+
+        cameras[3].lookAt(new THREE.Vector3(0, 0, 0));
+        cameras[3].applyMatrix(new THREE.Matrix4().makeTranslation(3, 1, -4));
+
+        cameras[4].position.set(-1, 0.5, 0);
+        cameras[4].zoom = 100;
+        cameras[4].updateProjectionMatrix();
+
         let camera = cameras[0];
         let cameraControls = new THREE.OrbitControls(camera);
 
         function changeCamera(cameraIndex) {
             camera = cameras[cameraIndex];
+            cameraControls.reset();
+            cameraControls.dispose();
             cameraControls = new THREE.OrbitControls(camera);
         }
 
         // Renderer setup
         let renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setSize(w, h);
         renderer.setClearColor(palette[0]);
-        renderer.shadowMapEnabled = true;
+        renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
 
         // Light setup
@@ -112,19 +150,25 @@
         scene.add(directionalLight);
         scene.add(directionalLightHelper);
 
-        var dolphin_matrix = new THREE.Matrix4().makeTranslation(0.5, 0.1, 0.32);
-        dolphin_matrix.multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01));
-        dolphin_matrix.multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2));
-        dolphin.applyMatrix(dolphin_matrix);
+        dolphin.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0.5, 0.1, 0.32)
+                .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
+                .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2))
+        );
+
         scene.add(dolphin);
 
-        var delorean_matrix = new THREE.Matrix4().makeTranslation(0, -6.95, 0);
-        delorean.applyMatrix(delorean_matrix);
+        delorean.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0, -6.95, 0)
+        );
+
         scene.add(delorean);
 
-        var palmTree_matrix = new THREE.Matrix4().makeTranslation(0, 0, -1.2);
-        palmTree_matrix.multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01));
-        palmTree.applyMatrix(palmTree_matrix);
+        palmTree.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0, 0, -1.2)
+                .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
+        );
+
         scene.add(palmTree);
 
         // Controls
@@ -137,6 +181,15 @@
                     break;
                 case 50:
                     changeCamera(1);
+                    break;
+                case 51:
+                    changeCamera(2);
+                    break;
+                case 52:
+                    changeCamera(3);
+                    break;
+                case 53:
+                    changeCamera(4);
                     break;
             }
         }
