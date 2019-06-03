@@ -77,11 +77,13 @@
     <script src="js/lib/GLTFLoader.js"></script>
     <script src="js/lib/OrbitControls.js"></script>
     <script src="js/lib/keydrown.min.js"></script>
+    <script src="js/lib/water.js"></script>
     <script type="module">
 
         import { scene as dolphin } from "./js/scenes/dolphin.js";
         import { scene as delorean } from "./js/scenes/delorean.js";
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
+        import { scene as terrain } from "./js/scenes/terrain.js";
         import lamp from "./js/scenes/lamp.js";
         import ui from "./js/ui.js";
 
@@ -118,13 +120,13 @@
         ];
 
         cameras[0].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[0].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 0.5, -4));
+        cameras[0].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 7.5, -4));
 
         cameras[1].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(3, 0.5, 4));
+        cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(3, 3.5, 4));
 
         cameras[2].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 0.5, 4));
+        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 3.5, 4));
 
         cameras[3].lookAt(new THREE.Vector3(0, 0, 0));
         cameras[3].applyMatrix(new THREE.Matrix4().makeTranslation(3, 0.5, -4));
@@ -185,6 +187,41 @@
 
         scene.add(palmTree);
 
+        terrain.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0, -1.18, 0)
+                .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2))
+                .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
+        );
+
+        scene.add(terrain);
+
+        var light = new THREE.AmbientLight(0xffffff, 0.1);
+        scene.add(light);
+
+        // Water setup
+        var waterGeometry = new THREE.PlaneBufferGeometry(10000, 10000);
+        var water = new THREE.Water(
+            waterGeometry,
+            {
+                textureWidth: 512,
+                textureHeight: 512,
+                waterNormals: new THREE.TextureLoader().load('models/waternormals.jpg', function (texture) {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                }),
+                alpha: 1.0,
+                sunDirection: light.position.clone().normalize(),
+                sunColor: 0xffffff,
+                waterColor: 0x001e0f,
+                distortionScale: 1.7,
+                fog: scene.fog !== undefined
+            }
+        );
+        water.rotation.x = - Math.PI / 2;
+        water.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0, -1.18, 0)
+        );
+        scene.add(water);
+
         // Controls
         document.addEventListener('keypress', onKeyPress, false);
 
@@ -242,12 +279,15 @@
 
         // Animation loop
         function animate() {
+            water.material.uniforms['time'].value += 1.0 / 60.0;
             kd.tick();
             requestAnimationFrame(animate);
             lampPivotPoint.rotation.y += lampRotation;
             lamp.scene.position.y += lampHeight;
             renderer.render(scene, camera);
-            ui.setLightColor(lamp.nextColor());
+            let lightColor = lamp.nextColor();
+            light.color.set(lightColor);
+            ui.setLightColor(lightColor);
         }
 
         animate();
