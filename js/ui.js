@@ -1,5 +1,7 @@
 let cameras = document.querySelectorAll(".camera");
 let lightColor = document.querySelector("#lightColor");
+let lightHeight = document.querySelector("#lightHeight");
+let lightRotation = document.querySelector("#lightRotation");
 
 setCamera(0);
 
@@ -15,4 +17,12 @@ function setLightColor(color) {
     lightColor.innerHTML = "#" + color.getHexString();
 }
 
-export default { setCamera, setLightColor };
+function setLightHeight(height) {
+    lightHeight.innerHTML = height.toFixed(3);
+}
+
+function setLightRotation(rotation) {
+    lightRotation.innerHTML = (rotation*180/Math.PI).toFixed(3) + "º";
+}
+
+export default { setCamera, setLightColor, setLightHeight, setLightRotation };
