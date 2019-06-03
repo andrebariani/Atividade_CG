@@ -14,10 +14,65 @@
         canvas {
             display: block;
         }
+
+        #info {
+            text-align: center;
+            position: absolute;
+            left: 0;
+            top: 0;
+            margin: 1em;
+        }
+
+        #cameras {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .camera {
+            display: inline-block;
+        }
+
+        .camera:before {
+            content: "【";
+        }
+
+        .camera:after {
+            content: "】";
+        }
+
+        .camera.active {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        #lightColor {
+            color: #ffffff;
+            margin: auto;
+            width: 5em;
+            padding: 0.65em;
+        }
     </style>
 </head>
 
 <body>
+    <div id="info">
+        <h2>【Ｃａｍｅｒａｓ】（悪ャタ）</h2>
+        <ul id="cameras">
+            <li class="camera">１</li>
+            <li class="camera">２</li>
+            <li class="camera">３</li>
+            <li class="camera">４</li>
+            <li class="camera">５</li>
+        </ul>
+        <h2>【Ｌｉｇｈｔ】（印グ汚）</h2>
+        <h4>【Ｃｏｌｏｒ】（ヿらぇ）</h4>
+        <div id="lightColor"></div>
+        <h4>【Ｈｅｉｇｈｔ】（ブ履か）</h4>
+        <div id="lightHeight"></div>
+        <h4>【Ｒｏｔａｔｉｏｎ】（ダマァ）</h4>
+        <div id="lightRotation"></div>
+    </div>
     <script src="js/lib/three.js"></script>
     <script src="js/lib/GLTFLoader.js"></script>
     <script src="js/lib/OrbitControls.js"></script>
@@ -28,6 +83,7 @@
         import { scene as delorean } from "./js/scenes/delorean.js";
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
         import lamp from "./js/scenes/lamp.js";
+        import ui from "./js/ui.js";
 
         // Viewport definition
         var w = window.innerWidth;
@@ -85,6 +141,7 @@
             cameraControls.reset();
             cameraControls.dispose();
             cameraControls = new THREE.OrbitControls(camera);
+            ui.setCamera(cameraIndex);
         }
 
         // Renderer setup
@@ -99,7 +156,9 @@
 
         let lampPivotPoint = new THREE.Object3D();
 
-        lamp.scene.position.set(1.25, 1.25, -1.25);
+        lamp.scene.applyMatrix(
+            new THREE.Matrix4().makeTranslation(1.25, 1.25, -1.25)
+        );
 
         lampPivotPoint.add(lamp.scene);
 
@@ -148,7 +207,7 @@
                     break;
             }
         }
-        
+
         // Lamp rotation
         let lampRotation = 0;
 
@@ -167,7 +226,7 @@
 
         // Lamp height
         let lampHeight = 0;
-        
+
         kd.A.down(function () {
             lampHeight = +0.05;
         });
@@ -180,7 +239,6 @@
         kd.S.up(function () {
             lampHeight = 0;
         });
-        
 
         // Animation loop
         function animate() {
@@ -189,7 +247,7 @@
             lampPivotPoint.rotation.y += lampRotation;
             lamp.scene.position.y += lampHeight;
             renderer.render(scene, camera);
-            lamp.nextColor();
+            ui.setLightColor(lamp.nextColor());
         }
 
         animate();

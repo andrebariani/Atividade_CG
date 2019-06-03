@@ -50,7 +50,7 @@ let scene = new THREE.Scene();
 
 let loader = new THREE.GLTFLoader();
 
-let pointLight = new THREE.PointLight(0xFFFFFF, 1, 10, 1);
+let pointLight = new THREE.PointLight(palette[0], 1, 10, 1);
 pointLight.castShadow = true;
 
 loader.load(
