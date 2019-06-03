@@ -22,11 +22,13 @@
     <script src="js/lib/GLTFLoader.js"></script>
     <script src="js/lib/OrbitControls.js"></script>
     <script src="js/lib/keydrown.min.js"></script>
+    <script src="js/lib/water.js"></script>
     <script type="module">
 
         import { scene as dolphin } from "./js/scenes/dolphin.js";
         import { scene as delorean } from "./js/scenes/delorean.js";
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
+        import { scene as terrain } from "./js/scenes/terrain.js";
         import lamp from "./js/scenes/lamp.js";
 
         // Viewport definition
@@ -126,6 +128,41 @@
 
         scene.add(palmTree);
 
+        terrain.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0, -5, 0)
+                .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
+        );
+
+        scene.add(terrain);
+
+        var light = new THREE.DirectionalLight( 0xffffff, 0.8 );
+		scene.add( light );
+
+        var helper = new THREE.DirectionalLightHelper( light, 5 );
+
+        scene.add( helper );
+
+        // Water setup
+        var waterGeometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
+        var water = new THREE.Water(
+            waterGeometry,
+            {
+                textureWidth: 512,
+                textureHeight: 512,
+                waterNormals: new THREE.TextureLoader().load( 'models/waternormals.jpg', function ( texture ) {
+                    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+                } ),
+                alpha: 1.0,
+                sunDirection: light.position.clone().normalize(),
+                sunColor: 0xffffff,
+                waterColor: 0x001e0f,
+                distortionScale: 1.7,
+                fog: scene.fog !== undefined
+            }
+        );
+        water.rotation.x = - Math.PI / 2;
+        scene.add( water );
+
         // Controls
         document.addEventListener('keypress', onKeyPress, false);
 
@@ -184,6 +221,7 @@
 
         // Animation loop
         function animate() {
+            water.material.uniforms[ 'time' ].value += 1.0 / 60.0;
             kd.tick();
             requestAnimationFrame(animate);
             lampPivotPoint.rotation.y += lampRotation;
