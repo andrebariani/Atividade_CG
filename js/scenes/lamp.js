@@ -41,7 +41,7 @@ function nextColor() {
         currentColorIndex++;
     }
 
-    directionalLight.color.set(currentColorValue);
+    pointLight.color.set(currentColorValue);
 
     return currentColorValue;
 }
@@ -50,16 +50,15 @@ let scene = new THREE.Scene();
 
 let loader = new THREE.GLTFLoader();
 
-let directionalLight = new THREE.DirectionalLight(0xFFFFFF, 1, 100);
-directionalLight.name = "directionalLight";
-directionalLight.castShadow = true;
+let pointLight = new THREE.PointLight(0xFFFFFF, 1, 10, 1);
+pointLight.castShadow = true;
 
 loader.load(
     'models/teascroll_clubhouse_-_lamp_prop/scene.gltf',
     function (gltf) {
         gltf.scene.position.y = 0.75;
         scene.add(gltf.scene);
-        scene.add(directionalLight);
+        scene.add(pointLight);
     },
     function (xhr) {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');

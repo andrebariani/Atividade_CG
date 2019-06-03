@@ -21,6 +21,7 @@
     <script src="js/lib/three.js"></script>
     <script src="js/lib/GLTFLoader.js"></script>
     <script src="js/lib/OrbitControls.js"></script>
+    <script src="js/lib/keydrown.min.js"></script>
     <script type="module">
 
         import { scene as dolphin } from "./js/scenes/dolphin.js";
@@ -126,8 +127,6 @@
         scene.add(palmTree);
 
         // Controls
-        // let 
-
         document.addEventListener('keypress', onKeyPress, false);
 
         function onKeyPress(event) {
@@ -149,19 +148,46 @@
                     break;
             }
         }
+        
+        // Lamp rotation
+        let lampRotation = 0;
 
-        document.addEventListener('keydown', onKeyDown, false);
+        kd.Z.down(function () {
+            lampRotation = 0.05;
+        });
+        kd.Z.up(function () {
+            lampRotation = 0;
+        });
+        kd.X.down(function () {
+            lampRotation = -0.05;
+        });
+        kd.X.up(function () {
+            lampRotation = 0;
+        });
 
-        function onKeyDown(event) {
-            switch(event.keyCode) {
-                case 90:
-                    break;
-            }
-        }
+        // Lamp height
+        let lampHeight = 0;
+        
+        kd.A.down(function () {
+            lampHeight = +0.05;
+        });
+        kd.A.up(function () {
+            lampHeight = 0;
+        });
+        kd.S.down(function () {
+            lampHeight = -0.05;
+        });
+        kd.S.up(function () {
+            lampHeight = 0;
+        });
+        
 
         // Animation loop
         function animate() {
+            kd.tick();
             requestAnimationFrame(animate);
+            lampPivotPoint.rotation.y += lampRotation;
+            lamp.scene.position.y += lampHeight;
             renderer.render(scene, camera);
             lamp.nextColor();
         }
