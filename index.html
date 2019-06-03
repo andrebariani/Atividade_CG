@@ -64,13 +64,13 @@
         ];
 
         cameras[0].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[0].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 0.5, -4));
+        cameras[0].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 7.5, -4));
 
         cameras[1].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(3, 0.5, 4));
+        cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(3, 3.5, 4));
 
         cameras[2].lookAt(new THREE.Vector3(0, 0, 0));
-        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 0.5, 4));
+        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(-3, 3.5, 4));
 
         cameras[3].lookAt(new THREE.Vector3(0, 0, 0));
         cameras[3].applyMatrix(new THREE.Matrix4().makeTranslation(3, 0.5, -4));
@@ -101,14 +101,14 @@
 
         let lampPivotPoint = new THREE.Object3D();
 
-        lamp.scene.position.set(1.25, 1.25, -1.25);
+        lamp.scene.position.set(1.25, 3.25, -1.25);
 
         lampPivotPoint.add(lamp.scene);
 
         scene.add(lampPivotPoint);
 
         dolphin.applyMatrix(
-            new THREE.Matrix4().makeTranslation(0.5, 0.1, 0.32)
+            new THREE.Matrix4().makeTranslation(0.5, 3.6, 0.32)
                 .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
                 .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2))
         );
@@ -116,20 +116,21 @@
         scene.add(dolphin);
 
         delorean.applyMatrix(
-            new THREE.Matrix4().makeTranslation(0, -1.28, -0.08)
+            new THREE.Matrix4().makeTranslation(0, 2.28, -0.08)
         );
 
         scene.add(delorean);
 
         palmTree.applyMatrix(
-            new THREE.Matrix4().makeTranslation(0, 0, -1.2)
+            new THREE.Matrix4().makeTranslation(0, 3.5, -1.2)
                 .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
         );
 
         scene.add(palmTree);
 
         terrain.applyMatrix(
-            new THREE.Matrix4().makeTranslation(0, -5, 0)
+            new THREE.Matrix4().makeTranslation(-15, -2, 0)
+                .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2))
                 .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
         );
 
@@ -137,10 +138,6 @@
 
         var light = new THREE.DirectionalLight( 0xffffff, 0.8 );
 		scene.add( light );
-
-        var helper = new THREE.DirectionalLightHelper( light, 5 );
-
-        scene.add( helper );
 
         // Water setup
         var waterGeometry = new THREE.PlaneBufferGeometry( 10000, 10000 );
