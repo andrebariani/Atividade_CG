@@ -3,7 +3,7 @@ let scene = new THREE.Scene();
 let loader = new THREE.GLTFLoader();
 
 let delorean = loader.load(
-    'models/low_poly_art_delorean/scene.gltf',
+    'models/low_poly_art_delorean/good_delorean.glb',
     function (gltf) {
         scene.add(gltf.scene);
     },
