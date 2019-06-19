@@ -283,6 +283,26 @@
         );
         scene.add(water);
 
+        var curve = new THREE.CubicBezierCurve3(
+            new THREE.Vector3(-5, 0, 0),
+            new THREE.Vector3(-2, 5, 0),
+            new THREE.Vector3(6, 5, 0),
+            new THREE.Vector3(5, 0, 0)
+        );
+
+
+        // Bezier curve line
+        var points = curve.getPoints(50);
+        var geometry = new THREE.BufferGeometry().setFromPoints(points);
+        var material = new THREE.LineBasicMaterial({ color: 0x99ffff, linewidth: 0.1 });
+        var curveObject = new THREE.Line(geometry, material);
+
+        curveObject.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0, -1.20, 0)
+        );
+
+        scene.add(curveObject);
+
         // Controls
         document.addEventListener('keypress', onKeyPress, false);
 
