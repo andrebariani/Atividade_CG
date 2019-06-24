@@ -295,6 +295,10 @@
 
         scene.add(curve);
 
+        var lampWorldPosition = new THREE.Vector3();
+        lamp.scene.getWorldPosition(lampWorldPosition);
+        console.log(lampWorldPosition);
+
         // Shader material setup
         var shaderMaterial = new THREE.ShaderMaterial({
             uniforms: {
@@ -303,10 +307,10 @@
                 Kd: new THREE.Uniform(0.5),
                 Ks: new THREE.Uniform(0.5),
                 shininessVal: new THREE.Uniform(1),
-                ambientColor: new THREE.Uniform(new THREE.Color(0xffffff)),
-                diffuseColor: new THREE.Uniform(new THREE.Color(0xffffff)),
-                specularColor: new THREE.Uniform(new THREE.Color(0xffffff)),
-                lightPos: new THREE.Uniform(light.position),
+                ambientColor: new THREE.Uniform(new THREE.Color(0xffdd00)),
+                diffuseColor: new THREE.Uniform(new THREE.Color(0xe8c900)),
+                specularColor: new THREE.Uniform(new THREE.Color(0xff8400)),
+                lightPos: new THREE.Uniform(lampWorldPosition),
             },
             vertexShader: document.getElementById('vertexShader').textContent,
             fragmentShader: document.getElementById('fragmentShader').textContent,
