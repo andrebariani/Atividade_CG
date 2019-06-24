@@ -149,63 +149,14 @@
         import { scene as delorean } from "./js/scenes/delorean.js";
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
         import { scene as terrain } from "./js/scenes/terrain.js";
+        import { scene as curve } from "./js/scenes/curve.js";
         import lamp from "./js/scenes/lamp.js";
+        import cameras from "./js/cameras.js";
         import ui from "./js/ui.js";
-
-        // Viewport definition
-        var w = window.innerWidth;
-        var h = window.innerHeight;
-        var viewSize = h;
-        var aspectRatio = w / h;
-
-        let _viewport = {
-            viewSize: viewSize,
-            aspectRatio: aspectRatio,
-            left: (-aspectRatio * viewSize) / 2,
-            right: (aspectRatio * viewSize) / 2,
-            top: viewSize / 2,
-            bottom: -viewSize / 2,
-            near: -1000,
-            far: 1000
-        }
-
-        // Camera setup
-        let cameras = [
-            new THREE.PerspectiveCamera(75, w / h, 1, 1000),
-            new THREE.PerspectiveCamera(75, w / h, 1, 1000),
-            new THREE.PerspectiveCamera(75, w / h, 1, 1000),
-            new THREE.PerspectiveCamera(75, w / h, 1, 1000),
-            new THREE.OrthographicCamera(
-                _viewport.left,
-                _viewport.right,
-                _viewport.top,
-                _viewport.bottom,
-                _viewport.near,
-                _viewport.far)
-        ];
-
-        cameras[0].applyMatrix(new THREE.Matrix4().makeTranslation(-5, 1, 0));
-        cameras[1].applyMatrix(new THREE.Matrix4().makeTranslation(0, 1, 5));
-        cameras[2].applyMatrix(new THREE.Matrix4().makeTranslation(0, 1, -5));
-        cameras[3].applyMatrix(new THREE.Matrix4().makeTranslation(5, 1, 0));
-        cameras[4].applyMatrix(new THREE.Matrix4().makeTranslation(20, 2.5, 0));
-        cameras[4].zoom = 35;
-        cameras[4].updateProjectionMatrix();
-
-        let camera = cameras[0];
-        let cameraControls = new THREE.OrbitControls(camera);
-
-        function changeCamera(cameraIndex) {
-            camera = cameras[cameraIndex];
-            cameraControls.reset();
-            cameraControls.dispose();
-            cameraControls = new THREE.OrbitControls(camera);
-            ui.setCamera(cameraIndex);
-        }
 
         // Renderer setup
         let renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(w, h);
+        renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0xff71ce);
         renderer.shadowMap.enabled = true;
         document.body.appendChild(renderer.domElement);
@@ -232,6 +183,12 @@
                 .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
                 .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2))
         );
+
+        dolphin.traverse(function (child) {
+            if (child instanceof THREE.Mesh) {
+                // child.material = material;
+            };
+        });
 
         scene.add(dolphin);
 
@@ -283,25 +240,12 @@
         );
         scene.add(water);
 
-        var curve = new THREE.CubicBezierCurve3(
-            new THREE.Vector3(-5, 0, 0),
-            new THREE.Vector3(-2, 5, 0),
-            new THREE.Vector3(6, 5, 0),
-            new THREE.Vector3(5, 0, 0)
+        // Curve setup
+        curve.applyMatrix(
+            new THREE.Matrix4().makeTranslation(0, -1.25, 0)
         );
 
-
-        // Bezier curve line
-        var points = curve.getPoints(50);
-        var geometry = new THREE.BufferGeometry().setFromPoints(points);
-        var material = new THREE.LineBasicMaterial({ color: 0x99ffff, linewidth: 0.1 });
-        var curveObject = new THREE.Line(geometry, material);
-
-        curveObject.applyMatrix(
-            new THREE.Matrix4().makeTranslation(0, -1.20, 0)
-        );
-
-        scene.add(curveObject);
+        scene.add(curve);
 
         // Controls
         document.addEventListener('keypress', onKeyPress, false);
@@ -309,19 +253,24 @@
         function onKeyPress(event) {
             switch (event.keyCode) {
                 case 49:
-                    changeCamera(0);
+                    cameras.changeCamera(0);
+                    ui.setCamera(0);
                     break;
                 case 50:
-                    changeCamera(1);
+                    cameras.changeCamera(1);
+                    ui.setCamera(1);
                     break;
                 case 51:
-                    changeCamera(2);
+                    cameras.changeCamera(2);
+                    ui.setCamera(2);
                     break;
                 case 52:
-                    changeCamera(3);
+                    cameras.changeCamera(3);
+                    ui.setCamera(3);
                     break;
                 case 53:
-                    changeCamera(4);
+                    cameras.changeCamera(4);
+                    ui.setCamera(4);
                     break;
             }
         }
@@ -365,7 +314,7 @@
             requestAnimationFrame(animate);
             lampPivotPoint.rotation.y += lampRotation;
             lamp.scene.position.y += lampHeight;
-            renderer.render(scene, camera);
+            renderer.render(scene, cameras.currentCamera());
             let lightColor = lamp.nextColor();
             light.color.set(lightColor);
             ui.setLightColor(lightColor);
