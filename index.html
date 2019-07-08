@@ -135,8 +135,8 @@
         <h4>【Ｒｏｔａｔｉｏｎ】（ダマァ）</h4>
         <div id="lightRotation"></div>
         <h4>【ｍｕｓｉｃ】（花の艶）</h4>
-        <div id="music">
-            <audio controls>
+        <div>
+            <audio controls id="music">
                 <source src="music/LÜNE - Rêve Lucide - 04 Rêve Lucide.mp3" type="audio/mpeg">
             </audio>
         </div>
@@ -320,6 +320,8 @@
         // Controls
         document.addEventListener('keypress', onKeyPress, false);
 
+        var music = document.querySelector("#music");
+
         var rocks = [];
 
         var spawnRockTimeout;
@@ -347,6 +349,8 @@
                     ui.setCamera(4);
                     break;
                 case 32:
+                    music.currentTime = 0;
+                    music.play();
                     clearInterval(spawnRockTimeout);
                     spawnRock();
                     break;
@@ -419,6 +423,7 @@
             rocks.forEach(rock => {
                 rock.boundingBox = new THREE.Box3().setFromObject(rock);
                 if(rock.boundingBox.intersectsBox(target.boundingBox)) {
+                    music.pause();
                     alert("Game over");
                     rocks.forEach(rock => {
                         scene.remove(rock);
