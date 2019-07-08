@@ -236,11 +236,6 @@
 
         scene.add(dolphin);
 
-        delorean.applyMatrix(
-            new THREE.Matrix4().makeTranslation(0, -1.28, -0.35)
-                .multiply(new THREE.Matrix4().makeRotationY(0.08))
-        );
-
         scene.add(delorean);
 
         palmTree.applyMatrix(
@@ -327,6 +322,8 @@
 
         var rocks = [];
 
+        var spawnRockTimeout;
+
         function onKeyPress(event) {
             switch (event.keyCode) {
                 case 49:
@@ -350,6 +347,7 @@
                     ui.setCamera(4);
                     break;
                 case 32:
+                    clearInterval(spawnRockTimeout);
                     spawnRock();
                     break;
             }
@@ -405,32 +403,32 @@
 
         var possibleZ = [-2, 0, 2];
 
-        var timeout;
-
         function spawnRock() {
             var rock = randomRock();
             rock.position.x = -15;
+            rock.position.y = -0.75;
             rock.position.z = possibleZ[Math.floor(Math.random() * possibleZ.length)];
             scene.add(rock);
             rocks.push(rock);
 
-            timeout = setTimeout(spawnRock, 1000);
+            spawnRockTimeout = setTimeout(spawnRock, 1000);
         }
 
         function checkCollision(target) {
-            // for (var vertexIndex = 0; vertexIndex < target.geometry.vertices.length; vertexIndex++) {
-            //     var localVertex = target.geometry.vertices[vertexIndex].clone();
-            //     var globalVertex = target.matrix.multiplyVector3(localVertex);
-            //     var directionVector = globalVertex.sub(target.position);
-
-            //     var ray = new THREE.Ray(target.position, directionVector.clone().normalize());
-            //     var collisionResults = ray.intersectObjects(rocks);
-            //     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-            //         console.log("hey");
-            //     }
-            // }
+            target.boundingBox = new THREE.Box3().setFromObject(target);
+            rocks.forEach(rock => {
+                rock.boundingBox = new THREE.Box3().setFromObject(rock);
+                if(rock.boundingBox.intersectsBox(target.boundingBox)) {
+                    alert("Game over");
+                    rocks.forEach(rock => {
+                        scene.remove(rock);
+                    });
+                    rocks = [];
+                    clearInterval(spawnRockTimeout);
+                    return;
+                }
+            });
         }
-
         // Animation loop
         function animate() {
             water.material.uniforms['time'].value += 1.0 / 60.0;
@@ -445,10 +443,16 @@
             ui.setLightColor(lightColor);
             ui.setLightHeight(lamp.scene.position.y);
             ui.setLightRotation(lampPivotPoint.rotation.y);
-            rocks.forEach(function (rock) {
+
+            rocks.forEach(function (rock, index) {
                 rock.position.x += 0.2;
             });
-            checkCollision(delorean.collisionBox);
+
+            if(rocks.length > 10) {
+                scene.remove(rocks.shift());
+            }
+
+            checkCollision(delorean);
         }
 
         animate();
