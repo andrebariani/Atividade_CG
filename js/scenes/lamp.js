@@ -52,13 +52,13 @@ let loader = new THREE.GLTFLoader();
 
 let pointLight = new THREE.PointLight(palette[0], 1, 20, 1);
 pointLight.castShadow = true;
+scene.add(pointLight);
 
 loader.load(
     'models/teascroll_clubhouse_-_lamp_prop/scene.gltf',
     function (gltf) {
         gltf.scene.position.y = 0.75;
         scene.add(gltf.scene);
-        scene.add(pointLight);
     },
     function (xhr) {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
