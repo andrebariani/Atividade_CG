@@ -135,7 +135,7 @@
         <h4>【Ｒｏｔａｔｉｏｎ】（ダマァ）</h4>
         <div id="lightRotation"></div>
         <h4>【ｍｕｓｉｃ】（花の艶）</h4>
-        <div id="music">
+        <div>
             <audio controls>
                 <source src="music/LÜNE - Rêve Lucide - 04 Rêve Lucide.mp3" type="audio/mpeg">
             </audio>
@@ -237,11 +237,6 @@
 
         scene.add(dolphin);
 
-        delorean.applyMatrix(
-            new THREE.Matrix4().makeTranslation(0, -1.28, -0.35)
-                .multiply(new THREE.Matrix4().makeRotationY(0.08))
-        );
-
         scene.add(delorean);
 
         palmTree.applyMatrix(
@@ -250,6 +245,13 @@
         );
 
         scene.add(palmTree);
+
+        // road.applyMatrix( 
+        //     new THREE.Matrix4().makeTranslation(0, 8.18, 0)
+        //         .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)) 
+        //         .multiply(new THREE.Matrix4().makeRotationZ(Math.PI)) 
+        //         .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
+        // );
 
         road.applyMatrix(
             new THREE.Matrix4().makeTranslation(0, -1.18, 0)
@@ -329,6 +331,8 @@
         var rocks = [];
         var terrains = [];
 
+        var spawnRockTimeout;
+
         function onKeyPress(event) {
             switch (event.keyCode) {
                 case 49:
@@ -352,6 +356,7 @@
                     ui.setCamera(4);
                     break;
                 case 32:
+                    clearInterval(spawnRockTimeout);
                     spawnRock();
                     spawnTerrain();
                     break;
@@ -409,16 +414,15 @@
         var possibleZRocks = [-2, 0, 2];
         var possibleZTerrains = [-2, 2];
 
-        var timeout;
-
         function spawnRock() {
             var rock = randomRock();
             rock.position.x = -15;
             rock.position.z = possibleZRocks[Math.floor(Math.random() * possibleZRocks.length)];
+            rock.position.y = -0.75;
             scene.add(rock);
             rocks.push(rock);
 
-            timeout = setTimeout(spawnRock, 1000);
+            spawnRockTimeout = setTimeout(spawnRock, 1000);
         }
 
         function spawnTerrain() {
@@ -432,19 +436,20 @@
         }
 
         function checkCollision(target) {
-            // for (var vertexIndex = 0; vertexIndex < target.geometry.vertices.length; vertexIndex++) {
-            //     var localVertex = target.geometry.vertices[vertexIndex].clone();
-            //     var globalVertex = target.matrix.multiplyVector3(localVertex);
-            //     var directionVector = globalVertex.sub(target.position);
-
-            //     var ray = new THREE.Ray(target.position, directionVector.clone().normalize());
-            //     var collisionResults = ray.intersectObjects(rocks);
-            //     if (collisionResults.length > 0 && collisionResults[0].distance < directionVector.length()) {
-            //         console.log("hey");
-            //     }
-            // }
+            target.boundingBox = new THREE.Box3().setFromObject(target);
+            rocks.forEach(rock => {
+                rock.boundingBox = new THREE.Box3().setFromObject(rock);
+                if(rock.boundingBox.intersectsBox(target.boundingBox)) {
+                    alert("Game over");
+                    rocks.forEach(rock => {
+                        scene.remove(rock);
+                    });
+                    rocks = [];
+                    clearInterval(spawnRockTimeout);
+                    return;
+                }
+            });
         }
-
         // Animation loop
         function animate() {
             water.material.uniforms['time'].value += 1.0 / 60.0;
@@ -459,10 +464,16 @@
             ui.setLightColor(lightColor);
             ui.setLightHeight(lamp.scene.position.y);
             ui.setLightRotation(lampPivotPoint.rotation.y);
-            rocks.forEach(function (rock) {
+
+            rocks.forEach(function (rock, index) {
                 rock.position.x += 0.2;
             });
-            checkCollision(delorean.collisionBox);
+
+            if(rocks.length > 10) {
+                scene.remove(rocks.shift());
+            }
+
+            checkCollision(delorean);
         }
 
         animate();

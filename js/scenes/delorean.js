@@ -2,22 +2,14 @@ let scene = new THREE.Scene();
 
 let loader = new THREE.GLTFLoader();
 
-var geometry = new THREE.BoxGeometry(3.25, 1, 1.75);
-var material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-var carCollisionBox = new THREE.Mesh(geometry, material);
-carCollisionBox.visible = false;
-carCollisionBox.rotation.y -= 0.08;
-carCollisionBox.position.x += 0.2;
-carCollisionBox.position.y += 0.6;
-carCollisionBox.position.z += 0.4;
-
-scene.collisionBox = carCollisionBox;
-
-scene.add(carCollisionBox);
+scene.boundingBox = {};
 
 loader.load(
     'models/low_poly_art_delorean/delorean.glb',
     function (gltf) {
+        gltf.scene.position.y -= 1.28;
+        gltf.scene.position.z -= 0.35;
+        gltf.scene.rotation.y += 0.08;
         scene.add(gltf.scene);
     },
     function (xhr) {

@@ -11,7 +11,9 @@ function randomTerrain() {
 loader.load(
     'models/grid_terrain/scene3.gltf',
     function (gltf) {
-        terrains.push(terrain);
+        gltf.children.forEach(terrain => {
+            terrains.push(terrain);
+        });
     },
     function (xhr) {
         console.log((xhr.loaded / xhr.total * 100) + '% loaded');
