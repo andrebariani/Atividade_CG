@@ -197,8 +197,9 @@
         import { scene as dolphin } from "./js/scenes/dolphin.js";
         import { scene as delorean } from "./js/scenes/delorean.js";
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
-        import { scene as terrain } from "./js/scenes/terrain.js";
+        import { scene as road } from "./js/scenes/road.js";
         import { scene as curve } from "./js/scenes/curve.js";
+        import { randomTerrain as randomTerrain } from "./js/scenes/terrain.js";
         import { randomRock as randomRock } from "./js/scenes/rocks.js";
         import lamp from "./js/scenes/lamp.js";
         import cameras from "./js/cameras.js";
@@ -250,13 +251,13 @@
 
         scene.add(palmTree);
 
-        terrain.applyMatrix(
+        road.applyMatrix(
             new THREE.Matrix4().makeTranslation(0, -1.18, 0)
                 .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2))
                 .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
         );
 
-        scene.add(terrain);
+        scene.add(road);
 
         var light = new THREE.AmbientLight(0xffffff, 0.1);
         scene.add(light);
@@ -326,6 +327,7 @@
         document.addEventListener('keypress', onKeyPress, false);
 
         var rocks = [];
+        var terrains = [];
 
         function onKeyPress(event) {
             switch (event.keyCode) {
@@ -351,6 +353,7 @@
                     break;
                 case 32:
                     spawnRock();
+                    spawnTerrain();
                     break;
             }
         }
@@ -403,18 +406,29 @@
             deloreanZ = 0;
         });
 
-        var possibleZ = [-2, 0, 2];
+        var possibleZRocks = [-2, 0, 2];
+        var possibleZTerrains = [-2, 2];
 
         var timeout;
 
         function spawnRock() {
             var rock = randomRock();
             rock.position.x = -15;
-            rock.position.z = possibleZ[Math.floor(Math.random() * possibleZ.length)];
+            rock.position.z = possibleZRocks[Math.floor(Math.random() * possibleZRocks.length)];
             scene.add(rock);
             rocks.push(rock);
 
             timeout = setTimeout(spawnRock, 1000);
+        }
+
+        function spawnTerrain() {
+            var terrain = randomTerrain();
+            terrain.position.x = -15;
+            terrain.position.z = possibleZTerrains[Math.floor(Math.random() * possibleZTerrains.length)];
+            scene.add(terrain);
+            terrains.push(terrain);
+
+            timeout = setTimeout(spawnTerrain, 1000);
         }
 
         function checkCollision(target) {
