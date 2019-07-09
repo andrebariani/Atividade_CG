@@ -199,7 +199,6 @@
         import { scene as palmTree } from "./js/scenes/palm_tree.js";
         import { scene as road } from "./js/scenes/road.js";
         import { scene as curve } from "./js/scenes/curve.js";
-        import { randomTerrain as randomTerrain } from "./js/scenes/terrain.js";
         import { randomRock as randomRock } from "./js/scenes/rocks.js";
         import lamp from "./js/scenes/lamp.js";
         import cameras from "./js/cameras.js";
@@ -245,13 +244,6 @@
         );
 
         scene.add(palmTree);
-
-        // road.applyMatrix( 
-        //     new THREE.Matrix4().makeTranslation(0, 8.18, 0)
-        //         .multiply(new THREE.Matrix4().makeRotationY(Math.PI / 2)) 
-        //         .multiply(new THREE.Matrix4().makeRotationZ(Math.PI)) 
-        //         .multiply(new THREE.Matrix4().makeScale(0.01, 0.01, 0.01))
-        // );
 
         road.applyMatrix(
             new THREE.Matrix4().makeTranslation(0, -1.18, 0)
@@ -331,7 +323,6 @@
         var music = document.querySelector("#music");
 
         var rocks = [];
-        var terrains = [];
 
         var spawnRockTimeout;
 
@@ -362,7 +353,6 @@
                     music.play();
                     clearInterval(spawnRockTimeout);
                     spawnRock();
-                    spawnTerrain();
                     break;
             }
         }
@@ -427,16 +417,6 @@
             rocks.push(rock);
 
             spawnRockTimeout = setTimeout(spawnRock, 1000);
-        }
-
-        function spawnTerrain() {
-            var terrain = randomTerrain();
-            terrain.position.x = -15;
-            terrain.position.z = possibleZTerrains[Math.floor(Math.random() * possibleZTerrains.length)];
-            scene.add(terrain);
-            terrains.push(terrain);
-
-            timeout = setTimeout(spawnTerrain, 1000);
         }
 
         function checkCollision(target) {
