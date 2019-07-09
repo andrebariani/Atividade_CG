@@ -9,7 +9,7 @@ var material = new THREE.MeshPhongMaterial({map: map});
 let rocks = [];
 
 function randomRock() {
-    return rocks[Math.floor(Math.random()*(rocks.length-1))].clone();
+    return rocks[Math.floor(Math.random()*rocks.length)].clone();
 }
 
 loader.load(

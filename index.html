@@ -410,7 +410,7 @@
 
         function spawnRock() {
             var rock = randomRock();
-            rock.position.x = -15;
+            rock.position.x = -30;
             rock.position.z = possibleZRocks[Math.floor(Math.random() * possibleZRocks.length)];
             rock.position.y = -0.75;
             scene.add(rock);
@@ -419,12 +419,16 @@
             spawnRockTimeout = setTimeout(spawnRock, 1000);
         }
 
+        var gameoverSound = new Audio("music/Super Mario Bros. - Game Over Sound Effect.mp3");
+
         function checkCollision(target) {
             target.boundingBox = new THREE.Box3().setFromObject(target);
             rocks.forEach(rock => {
                 rock.boundingBox = new THREE.Box3().setFromObject(rock);
                 if(rock.boundingBox.intersectsBox(target.boundingBox)) {
                     music.pause();
+                    gameoverSound.currentTime = 0;
+                    gameoverSound.play();
                     alert("Game over");
                     rocks.forEach(rock => {
                         scene.remove(rock);
