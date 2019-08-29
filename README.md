@@ -1,5 +1,8 @@
 # Atividade_CG
 Atividade Prática de Computação Gráfica
+
+![alt text](https://i.imgur.com/9vwtJ5Q.png)
+
 ## Membros:
 - André Matheus Bariani Trava RA: 743506
 - Giovanni Marçon Rossi       RA: 743541
